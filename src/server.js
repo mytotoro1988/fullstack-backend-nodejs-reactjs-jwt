@@ -4,20 +4,24 @@ const configViewEngine = require("./config/viewEngine");
 const apiRoutes = require("./routes/api");
 const connection = require("./config/database");
 const { getHomepage } = require("./controllers/homeController");
+const cors = require("cors");
 
 const app = express();
 const port = process.env.PORT || 8888;
 
 //config req.body
+app.use(cors()); // for json
 app.use(express.json()); // for json
 app.use(express.urlencoded({ extended: true })); // for form data
 
 //config template engine
 configViewEngine(app);
-
+const webApi = express.Router();
+webApi.get("/", getHomepage);
 //khai báo route
+
+app.use("/", webApi);
 app.use("/v1/api/", apiRoutes);
-// app.use("/", getHomepage);
 
 (async () => {
   try {
