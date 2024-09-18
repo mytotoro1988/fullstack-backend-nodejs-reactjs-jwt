@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const createUserService = async (name, email, password) => {
   try {
@@ -29,15 +31,35 @@ const loginService = async (email, password) => {
 
       if (isMatch) {
         //create access token
-        return user; // Trả về user nếu mật khẩu khớp
+        const payload = {
+          email: user.email,
+          name: user.name,
+        };
+        const access_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+          expiresIn: process.env.JWT_EXPRIRE,
+        });
+
+        return {
+          EC: 0,
+          access_token,
+          user: {
+            email: user.email,
+            name: user.name,
+          },
+        }; // Trả về user nếu mật khẩu khớp
       } else {
         console.error("Email or password is wrong");
+
+        console.log("1");
+
         return {
           EC: 2,
           EM: "Email/Password không hợp lệ",
         };
       }
     } else {
+      console.log("221212s");
+
       return {
         EC: 1,
         EM: "Email/Password không hợp lệ",
