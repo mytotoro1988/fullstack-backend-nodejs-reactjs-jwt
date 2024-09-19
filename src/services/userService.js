@@ -30,8 +30,9 @@ const createUserService = async (name, email, password) => {
 
 const getUserService = async () => {
   try {
-    let result = await User.find({});
-    return result;
+    let result = await User.find().select('-password');
+
+    return { data: result };
   } catch (error) {
     console.log(error);
     return null;
@@ -84,7 +85,7 @@ const loginService = async (email, password) => {
       };
     }
   } catch (error) {
-    console.log(error);
+    l(error);
     return null;
   }
 };
