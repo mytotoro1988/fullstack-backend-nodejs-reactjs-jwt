@@ -5,7 +5,13 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const createUserService = async (name, email, password) => {
+
   try {
+    const userInvalid = await User.findOne({ email })
+    if (userInvalid) {
+      return null
+    }
+
     const hashPassword = await bcrypt.hash(password, saltRounds);
     let result = await User.create({
       name,
@@ -14,11 +20,25 @@ const createUserService = async (name, email, password) => {
       role: "admin",
     });
     return result;
+
+
   } catch (error) {
     console.log(error);
     return null;
   }
 };
+
+const getUserService = async () => {
+  try {
+    let result = await User.find({});
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+
 
 const loginService = async (email, password) => {
   try {
@@ -50,7 +70,6 @@ const loginService = async (email, password) => {
       } else {
         console.error("Email or password is wrong");
 
-        console.log("1");
 
         return {
           EC: 2,
@@ -58,7 +77,6 @@ const loginService = async (email, password) => {
         };
       }
     } else {
-      console.log("221212s");
 
       return {
         EC: 1,
@@ -74,4 +92,5 @@ const loginService = async (email, password) => {
 module.exports = {
   createUserService,
   loginService,
+  getUserService
 };
